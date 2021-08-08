@@ -1,18 +1,13 @@
-import { useFrame, useLoader } from "@react-three/fiber";
-import { TextureLoader } from "three";
-import { OrbitControls, Stars } from "@react-three/drei";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useFrame } from "@react-three/fiber";
+import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 import cloudsMap from "../../assets/textures/8k_earth_clouds.jpg";
-import EarthNormalMap from "../../assets/textures/8k_earth_normal_map.jpg";
-
 
 const Planet = (props) => {
-  const [currentPlanetMap, cloudMap, normalMap] = useLoader(TextureLoader, [
-    props.currentPlanet.texture,
-    cloudsMap,
-    EarthNormalMap,
-  ]);
+  const [currentPlanetMap, cloudMap] = useTexture([ props.currentPlanet.texture, cloudsMap])
+
 
   const planetRef = useRef();
   const cloudsRef = useRef();
@@ -25,22 +20,23 @@ const Planet = (props) => {
     }
   });
 
-
   useEffect(() => {
-    props.toggleLoader(false)
-  }, [currentPlanetMap])
+    props.toggleLoader(false);
+  }, [currentPlanetMap]);
 
   return (
     <>
       <pointLight color="#f6f3ea" position={[2, 0, 2]} intensity={1.2} />
-     {props.currentPlanet?.features?.stars?.show && <Stars
-        radius={300}
-        depth={60}
-        count={props.currentPlanet?.features?.stars?.count || 20000}
-        factor={props.currentPlanet?.features?.stars?.factor || 7}
-        saturation={props.currentPlanet?.features?.stars?.saturation || 0}
-        fade={props.currentPlanet?.features?.stars?.blink || true}
-      />}
+      {props.currentPlanet?.features?.stars?.show && (
+        <Stars
+          radius={300}
+          depth={60}
+          count={props.currentPlanet?.features?.stars?.count || 20000}
+          factor={props.currentPlanet?.features?.stars?.factor || 7}
+          saturation={props.currentPlanet?.features?.stars?.saturation || 0}
+          fade={props.currentPlanet?.features?.stars?.blink || true}
+        />
+      )}
       {props.currentPlanet?.features?.clouds?.show && (
         <mesh ref={cloudsRef}>
           <sphereGeometry args={[1.005, 32, 32]} />
@@ -60,9 +56,6 @@ const Planet = (props) => {
         {/* <meshPhongMaterial specularMap={specularMap} /> */}
         <meshStandardMaterial
           map={currentPlanetMap}
-          normalMap={
-            props.currentPlanet?.features?.enableBaseLayer && normalMap
-          }
           metalness={0.4}
           roughness={0.6}
         />
